@@ -11,7 +11,7 @@ const Navbar: React.FC = () => {
     <nav className="navbar">
       <div className="navbar-container container">
         <div className="navbar-logo">
-          <Link href="/">
+          <Link to="/">
             <span className="logo-go">GO</span>
             <span className="logo-rigo">RIGO</span>
             <span className="logo-go">GO!</span>
