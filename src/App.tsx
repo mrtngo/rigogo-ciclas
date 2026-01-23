@@ -7,6 +7,7 @@ import Vender from './pages/Vender';
 import Taller from './pages/Taller';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
+import ProductDetail from './pages/ProductDetail';
 import './App.css';
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/vender" element={<Vender />} />
             <Route path="/taller" element={<Taller />} />
             <Route path="/login" element={<Login />} />

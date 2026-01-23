@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Product } from '../types/product';
 import { MapPin, Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import './ProductCard.css';
 
 interface ProductCardProps {
@@ -8,6 +9,8 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+    const navigate = useNavigate();
+
     const formattedPrice = new Intl.NumberFormat('es-CO', {
         style: 'currency',
         currency: 'COP',
@@ -15,7 +18,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     }).format(product.price);
 
     return (
-        <div className="product-card">
+        <div className="product-card" onClick={() => navigate(`/product/${product.id}`)}>
             <div className="product-image">
                 <img src={product.images[0]} alt={product.model} />
                 <span className="product-category">{product.category}</span>
