@@ -2,18 +2,22 @@ import React, { useState } from 'react';
 import { Search, ShoppingCart, Menu, X, User } from 'lucide-react';
 import './Navbar.css';
 
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
 
-  const closeMenu = () => setIsMenuOpen(false);
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location]);
 
   return (
     <nav className="navbar">
       <div className="navbar-container container">
         <div className="navbar-logo">
-          <Link to="/" onClick={closeMenu}>
+          <Link to="/">
             <span className="logo-go">GO</span>
             <span className="logo-rigo">RIGO</span>
             <span className="logo-go">GO!</span>
@@ -22,11 +26,11 @@ const Navbar: React.FC = () => {
         </div>
 
         <div className={`navbar-links ${isMenuOpen ? 'active' : ''}`}>
-          <Link to="/marketplace" onClick={closeMenu}>Marketplace</Link>
-          <Link to="/vender" onClick={closeMenu}>Vender</Link>
-          <Link to="/taller" onClick={closeMenu}>Taller</Link>
+          <Link to="/marketplace">Marketplace</Link>
+          <Link to="/vender">Vender</Link>
+          <Link to="/taller">Taller</Link>
           <div className="navbar-mobile-actions">
-            <Link to="/login" className="btn-login" onClick={closeMenu}>Login</Link>
+            <Link to="/login" className="btn-login">Login</Link>
           </div>
         </div>
 
@@ -48,7 +52,7 @@ const Navbar: React.FC = () => {
             <User size={20} />
             <span>Login</span>
           </Link>
-          <Link to="/login" className="icon-btn mobile-only" onClick={closeMenu}>
+          <Link to="/login" className="icon-btn mobile-only">
             <User size={24} />
           </Link>
           <button className="menu-btn mobile-only" onClick={() => setIsMenuOpen(!isMenuOpen)}>

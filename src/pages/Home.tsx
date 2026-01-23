@@ -26,7 +26,7 @@ const Home: React.FC = () => {
                     <div className="hero-image">
                         {/* Placeholder for hero image - usually a high quality photo of a bike or Rigo */}
                         <div className="image-placeholder">
-                            <img src="https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&q=80&w=1000" alt="Specialized Bike" />
+                            <img src="https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=80&w=1600&auto=format&fit=crop" alt="Specialized Bike" />
                         </div>
                     </div>
                 </div>

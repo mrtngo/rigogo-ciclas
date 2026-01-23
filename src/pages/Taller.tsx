@@ -13,7 +13,7 @@ const Taller: React.FC = () => {
                     <button className="btn-primary"><Calendar size={18} /> Agendar Cita</button>
                 </div>
                 <div className="taller-visual">
-                    <img src="https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?auto=format&fit=crop&q=80&w=1000" alt="Taller Mecanico" />
+                    <img src="https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?q=80&w=1600&auto=format&fit=crop" alt="Taller Mecanico" />
                 </div>
             </section>
 
