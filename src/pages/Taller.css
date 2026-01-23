@@ -1,0 +1,77 @@
+.taller-page {
+    padding: 4rem 0;
+}
+
+.taller-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    margin-bottom: 6rem;
+}
+
+.taller-content h1 {
+    font-size: 3.5rem;
+    margin: 1.5rem 0;
+}
+
+.taller-content .highlight {
+    color: var(--color-secondary);
+}
+
+.taller-content p {
+    font-size: 1.25rem;
+    color: var(--color-text-muted);
+    margin-bottom: 2.5rem;
+}
+
+.taller-visual img {
+    width: 100%;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+
+.services {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.service-item {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    padding: 2rem;
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+}
+
+.service-icon {
+    background: var(--color-primary);
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.service-item h4 {
+    margin-bottom: 0.5rem;
+}
+
+.service-item p {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 992px) {
+    .taller-header {
+        grid-template-columns: 1fr;
+    }
+
+    .services {
+        grid-template-columns: 1fr;
+    }
+}

@@ -39,7 +39,7 @@ const Marketplace: React.FC = () => {
                 <aside className="filters-sidebar desktop-only">
                     <h3>Categorías</h3>
                     <div className="filter-options">
-                        {['Todas', 'Ruta', 'MTB', 'Gravel', 'E-Bike', 'Urbana'].map(cat => (
+                        {['Todas', 'Ruta', 'MTB', 'Gravel', 'Accesorio', 'Componente'].map(cat => (
                             <button
                                 key={cat}
                                 className={`filter-btn ${selectedCategory === cat ? 'active' : ''}`}

@@ -8,7 +8,7 @@ export interface Product {
     price: number;
     size: string;
     condition: BikeCondition;
-    category: 'Ruta' | 'MTB' | 'Urbana' | 'Gravel' | 'E-Bike';
+    category: 'Ruta' | 'MTB' | 'Urbana' | 'Gravel' | 'E-Bike' | 'Accesorio' | 'Componente';
     images: string[];
     description: string;
     specs: {

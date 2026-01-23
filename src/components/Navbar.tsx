@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Search, ShoppingCart, Menu, X, User } from 'lucide-react';
 import './Navbar.css';
 
+import { Link } from 'react-router-dom';
+
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -9,20 +11,20 @@ const Navbar: React.FC = () => {
     <nav className="navbar">
       <div className="navbar-container container">
         <div className="navbar-logo">
-          <a href="/">
+          <Link href="/">
             <span className="logo-go">GO</span>
             <span className="logo-rigo">RIGO</span>
             <span className="logo-go">GO!</span>
             <span className="logo-tag">BICIS</span>
-          </a>
+          </Link>
         </div>
 
         <div className={`navbar-links ${isMenuOpen ? 'active' : ''}`}>
-          <a href="/marketplace">Marketplace</a>
-          <a href="/vender">Vender</a>
-          <a href="/taller">Taller</a>
+          <Link to="/marketplace">Marketplace</Link>
+          <Link to="/vender">Vender</Link>
+          <Link to="/taller">Taller</Link>
           <div className="navbar-mobile-actions">
-            <a href="/login" className="btn-login">Login</a>
+            <Link to="/login" className="btn-login">Login</Link>
           </div>
         </div>
 

@@ -3,6 +3,8 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Marketplace from './pages/Marketplace';
 import AdminDashboard from './pages/AdminDashboard';
+import Vender from './pages/Vender';
+import Taller from './pages/Taller';
 import './App.css';
 
 function App() {
@@ -14,6 +16,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/vender" element={<Vender />} />
+            <Route path="/taller" element={<Taller />} />
             <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
         </main>
