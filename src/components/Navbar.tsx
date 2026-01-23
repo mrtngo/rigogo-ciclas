@@ -7,11 +7,13 @@ import { Link } from 'react-router-dom';
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const closeMenu = () => setIsMenuOpen(false);
+
   return (
     <nav className="navbar">
       <div className="navbar-container container">
         <div className="navbar-logo">
-          <Link to="/">
+          <Link to="/" onClick={closeMenu}>
             <span className="logo-go">GO</span>
             <span className="logo-rigo">RIGO</span>
             <span className="logo-go">GO!</span>
@@ -20,11 +22,11 @@ const Navbar: React.FC = () => {
         </div>
 
         <div className={`navbar-links ${isMenuOpen ? 'active' : ''}`}>
-          <Link to="/marketplace">Marketplace</Link>
-          <Link to="/vender">Vender</Link>
-          <Link to="/taller">Taller</Link>
+          <Link to="/marketplace" onClick={closeMenu}>Marketplace</Link>
+          <Link to="/vender" onClick={closeMenu}>Vender</Link>
+          <Link to="/taller" onClick={closeMenu}>Taller</Link>
           <div className="navbar-mobile-actions">
-            <Link to="/login" className="btn-login">Login</Link>
+            <Link to="/login" className="btn-login" onClick={closeMenu}>Login</Link>
           </div>
         </div>
 
