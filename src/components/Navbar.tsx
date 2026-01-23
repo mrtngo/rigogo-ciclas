@@ -44,10 +44,13 @@ const Navbar: React.FC = () => {
           <button className="icon-btn">
             <ShoppingCart size={24} />
           </button>
-          <button className="btn-login desktop-only">
+          <Link to="/login" className="btn-login desktop-only">
             <User size={20} />
             <span>Login</span>
-          </button>
+          </Link>
+          <Link to="/login" className="icon-btn mobile-only" onClick={closeMenu}>
+            <User size={24} />
+          </Link>
           <button className="menu-btn mobile-only" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>

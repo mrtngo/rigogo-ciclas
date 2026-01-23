@@ -2,7 +2,7 @@ import React from 'react';
 import './Home.css';
 import { ArrowRight, CheckCircle, Shield, Truck } from 'lucide-react';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Home: React.FC = () => {
     const navigate = useNavigate();
@@ -20,7 +20,7 @@ const Home: React.FC = () => {
                             <button className="btn-primary" onClick={() => navigate('/marketplace')}>
                                 Ver Bicicletas <ArrowRight size={20} />
                             </button>
-                            <button className="btn-outline">Vender mi Bici</button>
+                            <Link to="/vender" className="btn-outline">Vender mi Bici</Link>
                         </div>
                     </div>
                     <div className="hero-image">
