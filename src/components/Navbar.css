@@ -9,6 +9,14 @@
   text-transform: uppercase;
 }
 
+@media (max-width: 768px) {
+  .announcement-bar {
+    font-size: 0.65rem;
+    padding: 6px 1rem;
+    letter-spacing: 0.2px;
+  }
+}
+
 .announcement-bar strong {
   color: var(--color-primary);
 }
