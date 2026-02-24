@@ -8,6 +8,7 @@ import Taller from './pages/Taller';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
 import ProductDetail from './pages/ProductDetail';
+import Checkout from './pages/Checkout';
 import './App.css';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/checkout/:id" element={<Checkout />} />
             <Route path="/vender" element={<Vender />} />
             <Route path="/taller" element={<Taller />} />
             <Route path="/login" element={<Login />} />

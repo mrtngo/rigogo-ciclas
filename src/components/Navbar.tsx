@@ -17,48 +17,48 @@ const Navbar: React.FC = () => {
 
   return (
     <>
+      {/* Announcement bar */}
+      <div className="announcement-bar">
+        REGÍSTRATE HOY, PUBLICA Y VENDE TU BICI. <strong>¡FÁCIL Y RÁPIDO!</strong>
+      </div>
+
       <nav className="navbar">
         <div className="navbar-container container">
           <div className="navbar-logo">
             <Link to="/">
-              <span className="logo-go">GO</span>
-              <span className="logo-rigo">RIGO</span>
-              <span className="logo-go">GO!</span>
-              <span className="logo-tag">BICIS</span>
+              <span className="logo-icon">⇄</span>
+              <span className="logo-text">rigomarket.</span>
             </Link>
           </div>
 
           <div className={`navbar-links ${isMenuOpen ? 'active' : ''}`}>
-            <Link to="/marketplace">Marketplace</Link>
-            <Link to="/vender">Vender</Link>
-            <Link to="/taller">Taller</Link>
-            <div className="navbar-mobile-actions">
-              <Link to="/login" className="btn-login">Login</Link>
-            </div>
-          </div>
+            <Link to="/marketplace">Compra</Link>
+            <Link to="/vender">Vende</Link>
+            <Link to="/taller">Encuentra una tienda</Link>
+            <Link to="/contacto">Contacto</Link>
 
-          <div className="navbar-search desktop-only">
-            <div className="search-wrapper" onClick={() => setIsSearchOpen(true)}>
-              <Search size={18} className="search-icon" />
-              <input type="text" placeholder="Busca tu próxima bici..." readOnly />
+            <div className="navbar-mobile-actions">
+              <Link to="/vender" className="btn-primary">Vender mi bici</Link>
+              <Link to="/login" className="btn-secondary">Iniciar Sesión</Link>
             </div>
           </div>
 
           <div className="navbar-actions">
             <button className="icon-btn search-btn mobile-only" onClick={() => setIsSearchOpen(true)}>
-              <Search size={24} />
+              <Search size={22} />
             </button>
+            <div className="navbar-user-actions desktop-only">
+              <button className="icon-btn" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                <Menu size={20} />
+              </button>
+              <Link to="/login" className="icon-btn">
+                <User size={20} />
+              </Link>
+            </div>
             <button className="icon-btn cart-toggle" onClick={() => setIsCartOpen(true)}>
-              <ShoppingCart size={24} />
+              <ShoppingCart size={22} />
               <span className="cart-badge">0</span>
             </button>
-            <Link to="/login" className="btn-login desktop-only">
-              <User size={20} />
-              <span>Login</span>
-            </Link>
-            <Link to="/login" className="icon-btn mobile-only">
-              <User size={24} />
-            </Link>
             <button className="menu-btn mobile-only" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
@@ -77,8 +77,8 @@ const Navbar: React.FC = () => {
             <div className="drawer-content">
               <div className="empty-cart">
                 <ShoppingCart size={48} />
-                <p>Tu carrito está vacío, mijito.</p>
-                <Link to="/marketplace" className="btn-primary" onClick={() => setIsCartOpen(false)}>Ir a la tienda</Link>
+                <p>No tienes productos en el carrito.</p>
+                <Link to="/marketplace" className="btn-primary" onClick={() => setIsCartOpen(false)}>Explorar bicicletas</Link>
               </div>
             </div>
           </div>
@@ -92,16 +92,16 @@ const Navbar: React.FC = () => {
             <div className="search-modal-header">
               <div className="search-input-wrapper">
                 <Search size={24} />
-                <input type="text" placeholder="Busca marca, modelo o accesorio..." autoFocus />
+                <input type="text" placeholder="Ej. Specialized Tarmac, Trek Madone..." autoFocus />
               </div>
               <button className="icon-btn" onClick={() => setIsSearchOpen(false)}><X size={28} /></button>
             </div>
             <div className="search-suggestions">
               <p className="suggestion-label">Búsquedas populares</p>
               <div className="suggestion-tags">
-                <Link to="/marketplace?q=tarmac">Specialized Tarmac</Link>
-                <Link to="/marketplace?q=mtb">MTB Carbono</Link>
-                <Link to="/marketplace?q=casco">Cascos POC</Link>
+                <Link to="/marketplace?q=ruta">Bicicletas de Ruta</Link>
+                <Link to="/marketplace?q=mtb">MTB</Link>
+                <Link to="/marketplace?q=carbono">Cuadros de Carbono</Link>
               </div>
             </div>
           </div>

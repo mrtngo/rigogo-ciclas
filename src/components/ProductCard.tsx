@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Product } from '../types/product';
-import { MapPin, Star } from 'lucide-react';
+import { MapPin, Star, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './ProductCard.css';
 
@@ -22,7 +22,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <div className="product-image">
                 <img src={product.images[0]} alt={product.model} />
                 <span className="product-category">{product.category}</span>
-                <span className="product-condition">{product.condition}</span>
+                <span className="product-condition">
+                    <ShieldCheck size={14} /> {product.condition}
+                </span>
             </div>
             <div className="product-info">
                 <div className="product-header">

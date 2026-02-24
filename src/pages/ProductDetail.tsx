@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { MOCK_PRODUCTS } from '../data/products';
-import { ChevronLeft, Shield, Truck, RotateCcw, MessageSquare, ShoppingCart, Star } from 'lucide-react';
+import { ChevronLeft, Shield, Truck, RotateCcw, MessageSquare, ShoppingCart, Star, ShieldCheck } from 'lucide-react';
 import './ProductDetail.css';
 
 const ProductDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
+    const navigate = useNavigate();
     const product = MOCK_PRODUCTS.find(p => p.id === id);
     const [activeImage, setActiveImage] = useState(0);
 
@@ -36,7 +37,9 @@ const ProductDetail: React.FC = () => {
                     <section className="product-gallery">
                         <div className="main-image">
                             <img src={product.images[activeImage]} alt={product.model} />
-                            <span className="condition-badge">{product.condition}</span>
+                            <span className="condition-badge">
+                                <ShieldCheck size={16} /> {product.condition}
+                            </span>
                         </div>
                         <div className="image-thumbs">
                             {product.images.map((img, idx) => (
@@ -74,11 +77,11 @@ const ProductDetail: React.FC = () => {
                         </div>
 
                         <div className="purchase-actions">
-                            <button className="btn-primary buy-btn">
+                            <button className="btn-primary buy-btn" onClick={() => navigate(`/checkout/${product.id}`)}>
                                 <ShoppingCart size={20} /> Comprar Ahora
                             </button>
-                            <button className="btn-outline">
-                                <MessageSquare size={20} /> Preguntar al Vendedor
+                            <button className="btn-secondary">
+                                <MessageSquare size={20} /> Hacer una Oferta
                             </button>
                         </div>
 

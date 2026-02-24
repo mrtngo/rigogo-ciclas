@@ -33,7 +33,7 @@
 
 .nav-item.active {
     color: var(--color-secondary);
-    background: rgba(233, 30, 99, 0.05);
+    background: rgba(173, 145, 255, 0.08);
     border-right: 3px solid var(--color-secondary);
 }
 

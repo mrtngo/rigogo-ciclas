@@ -1,5 +1,5 @@
 @import './styles/variables.css';
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
 
 * {
   margin: 0;
@@ -8,7 +8,7 @@
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Apfel Grotezk', 'Outfit', system-ui, -apple-system, sans-serif;
   background-color: var(--color-background);
   color: var(--color-text-main);
   line-height: 1.5;
@@ -22,9 +22,9 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Apfel Grotezk', 'Outfit', sans-serif;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
 a {
@@ -44,5 +44,5 @@ button {
 .container {
   max-width: var(--container-max-width);
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 1.5rem;
 }

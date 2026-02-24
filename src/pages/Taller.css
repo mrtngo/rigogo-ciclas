@@ -48,6 +48,7 @@
 
 .service-icon {
     background: var(--color-primary);
+    color: var(--color-text-main);
     width: 48px;
     height: 48px;
     border-radius: var(--radius-md);

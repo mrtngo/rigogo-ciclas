@@ -1,18 +1,30 @@
 :root {
-    /* Brand Colors - GO RIGO GO! Inspired */
-    --color-primary: #f0ff00;
-    /* Neon Yellow */
-    --color-secondary: #e91e63;
-    /* Pink */
-    --color-accent: #00bcd4;
-    /* Cyan */
+    /* Brand Colors - RIGOMARKET Brandbook V.1 */
 
-    /* Neutral Colors */
+    /* Verde family */
+    --color-dark: #112622;          /* Verde - dark backgrounds, main dark color */
+    --color-dark-medium: #1D4F45;   /* Verde Claro */
+    --color-dark-deep: #021612;     /* Verde Oscuro */
+
+    /* Azul/Mint family */
+    --color-primary: #42FFEC;       /* Azul - main brand CTA color */
+    --color-primary-light: #B0FFF6; /* Azul Claro */
+    --color-primary-dark: #0ECCC2;  /* Azul Oscuro */
+
+    /* Morado family */
+    --color-secondary: #AD91FF;     /* Morado */
+    --color-secondary-light: #ECE9FF; /* Morado Claro / Lavender */
+    --color-secondary-dark: #8969BC; /* Morado Oscuro */
+
+    /* Text */
+    --color-text-main: #112622;
+    --color-text-muted: #6b7280;
+    --color-accent: #112622;
+
+    /* Neutral */
     --color-background: #ffffff;
-    --color-surface: #f8f9fa;
-    --color-text-main: #1a1a1b;
-    --color-text-muted: #6c757d;
-    --color-border: #e2e8f0;
+    --color-surface: #f5f5f5;
+    --color-border: #e5e7eb;
 
     /* Layout */
     --header-height: 70px;
@@ -20,14 +32,15 @@
     --container-max-width: 1280px;
 
     /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 1px 3px rgba(17, 38, 34, 0.08);
+    --shadow-md: 0 4px 12px rgba(17, 38, 34, 0.1);
+    --shadow-lg: 0 10px 30px rgba(17, 38, 34, 0.15);
 
-    /* Border Radius */
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 16px;
+    /* Border Radius - rounder to match brand */
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-xl: 32px;
     --radius-full: 9999px;
 
     /* Transitions */
@@ -36,8 +49,8 @@
     --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, #d4e100 100%);
-    --gradient-secondary: linear-gradient(135deg, var(--color-secondary) 0%, #c2185b 100%);
+    --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    --gradient-dark: linear-gradient(135deg, var(--color-dark) 0%, var(--color-dark-deep) 100%);
 }
 
 @keyframes fadeIn {
