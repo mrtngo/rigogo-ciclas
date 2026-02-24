@@ -1,13 +1,99 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Camera, Tag, CheckCircle, ChevronRight, ChevronLeft, Upload, Bike } from 'lucide-react';
 import './Vender.css';
 import { Link } from 'react-router-dom';
+import { doc, collection, setDoc, serverTimestamp } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage } from '../lib/firebase';
+import { useAuth } from '../context/AuthContext';
+
+interface FormData {
+    brand: string;
+    model: string;
+    year: string;
+    category: string;
+    size: string;
+    condition: string;
+    description: string;
+    price: string;
+}
 
 const Vender: React.FC = () => {
-    const [step, setStep] = useState(0); // 0 is landing, 1-4 are form steps, 5 is success
+    const { user } = useAuth();
+    const [step, setStep] = useState(0);
+    const [submitting, setSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState('');
+    const [imageFiles, setImageFiles] = useState<File[]>([]);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const [formData, setFormData] = useState<FormData>({
+        brand: '',
+        model: '',
+        year: '',
+        category: 'Ruta',
+        size: 'M',
+        condition: 'Como nuevo',
+        description: '',
+        price: '',
+    });
+
+    const setField = (field: keyof FormData) => (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    ) => setFormData(prev => ({ ...prev, [field]: e.target.value }));
 
     const handleNext = () => setStep(s => Math.min(s + 1, 5));
     const handleBack = () => setStep(s => Math.max(s - 1, 0));
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            setImageFiles(Array.from(e.target.files));
+        }
+    };
+
+    const handleSubmit = async () => {
+        if (!user) return;
+        setSubmitting(true);
+        setSubmitError('');
+        try {
+            const listingRef = doc(collection(db, 'listings'));
+            const imageUrls: string[] = [];
+
+            for (const file of imageFiles) {
+                const storageRef = ref(storage, `listings/${listingRef.id}/${file.name}`);
+                await uploadBytes(storageRef, file);
+                const url = await getDownloadURL(storageRef);
+                imageUrls.push(url);
+            }
+
+            await setDoc(listingRef, {
+                brand: formData.brand,
+                model: formData.model,
+                year: parseInt(formData.year) || new Date().getFullYear(),
+                price: parseInt(formData.price) || 0,
+                size: formData.size,
+                condition: formData.condition,
+                category: formData.category,
+                images: imageUrls,
+                description: formData.description,
+                specs: { frame: '', groupset: '', wheels: '' },
+                seller: {
+                    uid: user.uid,
+                    name: user.displayName ?? user.email ?? 'Vendedor',
+                    location: 'Colombia',
+                    rating: 0,
+                },
+                status: 'pending',
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp(),
+            });
+
+            setStep(5);
+        } catch {
+            setSubmitError('Ocurrió un error al publicar. Intenta de nuevo.');
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     // Render Landing
     if (step === 0) {
@@ -79,7 +165,7 @@ const Vender: React.FC = () => {
 
                         <div className="form-group">
                             <label>Marca</label>
-                            <select className="form-input">
+                            <select className="form-input" value={formData.brand} onChange={setField('brand')}>
                                 <option value="">Selecciona una marca</option>
                                 <option value="Specialized">Specialized</option>
                                 <option value="Trek">Trek</option>
@@ -90,11 +176,23 @@ const Vender: React.FC = () => {
                         </div>
                         <div className="form-group">
                             <label>Modelo</label>
-                            <input type="text" className="form-input" placeholder="Ej. Tarmac SL7" />
+                            <input
+                                type="text"
+                                className="form-input"
+                                placeholder="Ej. Tarmac SL7"
+                                value={formData.model}
+                                onChange={setField('model')}
+                            />
                         </div>
                         <div className="form-group">
                             <label>Año</label>
-                            <input type="number" className="form-input" placeholder="Ej. 2022" />
+                            <input
+                                type="number"
+                                className="form-input"
+                                placeholder="Ej. 2022"
+                                value={formData.year}
+                                onChange={setField('year')}
+                            />
                         </div>
                     </div>
                 )}
@@ -107,28 +205,43 @@ const Vender: React.FC = () => {
                         <div className="form-row">
                             <div className="form-group">
                                 <label>Categoría</label>
-                                <select className="form-input">
+                                <select className="form-input" value={formData.category} onChange={setField('category')}>
                                     <option value="Ruta">Ruta</option>
                                     <option value="MTB">MTB</option>
                                     <option value="Gravel">Gravel</option>
+                                    <option value="Urbana">Urbana</option>
+                                    <option value="E-Bike">E-Bike</option>
                                 </select>
                             </div>
                             <div className="form-group">
                                 <label>Talla</label>
-                                <select className="form-input">
+                                <select className="form-input" value={formData.size} onChange={setField('size')}>
+                                    <option value="XS">XS</option>
                                     <option value="S">S</option>
                                     <option value="M">M</option>
                                     <option value="L">L</option>
+                                    <option value="XL">XL</option>
                                 </select>
                             </div>
                         </div>
                         <div className="form-group">
                             <label>Estado General</label>
-                            <select className="form-input">
+                            <select className="form-input" value={formData.condition} onChange={setField('condition')}>
+                                <option value="Nuevo">Nuevo</option>
                                 <option value="Como nuevo">Como nuevo</option>
                                 <option value="Excelente">Excelente</option>
                                 <option value="Buen estado">Buen estado</option>
                             </select>
+                        </div>
+                        <div className="form-group">
+                            <label>Descripción</label>
+                            <textarea
+                                className="form-input"
+                                placeholder="Cuéntanos más sobre tu bici: mantenimiento, accesorios incluidos, historial..."
+                                rows={4}
+                                value={formData.description}
+                                onChange={setField('description')}
+                            />
                         </div>
                     </div>
                 )}
@@ -138,13 +251,36 @@ const Vender: React.FC = () => {
                         <h2>Sube las mejores fotos</h2>
                         <p className="text-muted">Las fotos de buena calidad venden más rápido.</p>
 
-                        <div className="upload-area">
+                        <div className="upload-area" onClick={() => fileInputRef.current?.click()}>
                             <Upload size={48} className="upload-icon" />
-                            <h3>Arrastra y suelta tus fotos aquí</h3>
-                            <p>o</p>
-                            <button className="btn-secondary">Seleccionar Archivos</button>
+                            {imageFiles.length > 0 ? (
+                                <>
+                                    <h3>{imageFiles.length} foto{imageFiles.length !== 1 ? 's' : ''} seleccionada{imageFiles.length !== 1 ? 's' : ''}</h3>
+                                    <p>{imageFiles.map(f => f.name).join(', ')}</p>
+                                </>
+                            ) : (
+                                <>
+                                    <h3>Arrastra y suelta tus fotos aquí</h3>
+                                    <p>o</p>
+                                </>
+                            )}
+                            <button
+                                className="btn-secondary"
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+                            >
+                                Seleccionar Archivos
+                            </button>
                             <span className="upload-hint">Formatos soportados: JPG, PNG. Máx 5MB por foto.</span>
                         </div>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            onChange={handleFileChange}
+                        />
                     </div>
                 )}
 
@@ -157,20 +293,36 @@ const Vender: React.FC = () => {
                             <label>Precio de Venta (COP)</label>
                             <div className="price-input-wrapper">
                                 <span className="currency">$</span>
-                                <input type="number" className="form-input price-input" placeholder="0" />
+                                <input
+                                    type="number"
+                                    className="form-input price-input"
+                                    placeholder="0"
+                                    value={formData.price}
+                                    onChange={setField('price')}
+                                />
                             </div>
                         </div>
 
                         <div className="summary-box">
                             <p>Ten en cuenta que RIGOMARKET cobra una pequeña comisión por la transacción segura y logística técnica.</p>
                         </div>
+
+                        {submitError && (
+                            <p style={{ color: '#dc2626', marginTop: '1rem', fontSize: '0.9rem' }}>{submitError}</p>
+                        )}
                     </div>
                 )}
 
                 <div className="form-actions">
-                    <button className="btn-primary" onClick={handleNext}>
-                        {step === 4 ? 'Publicar Mi Bici' : 'Siguiente Paso'} <ChevronRight size={20} />
-                    </button>
+                    {step < 4 ? (
+                        <button className="btn-primary" onClick={handleNext}>
+                            Siguiente Paso <ChevronRight size={20} />
+                        </button>
+                    ) : (
+                        <button className="btn-primary" onClick={handleSubmit} disabled={submitting}>
+                            {submitting ? 'Publicando...' : 'Publicar Mi Bici'} {!submitting && <ChevronRight size={20} />}
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

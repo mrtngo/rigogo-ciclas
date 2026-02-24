@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MOCK_PRODUCTS } from '../data/products';
+import { useListings } from '../hooks/useListings';
 import ProductCard from '../components/ProductCard';
 import './Marketplace.css';
 import { Filter, Search } from 'lucide-react';
@@ -10,7 +11,10 @@ const Marketplace: React.FC = () => {
     const [selectedSize, setSelectedSize] = useState('Todas');
     const [selectedCondition, setSelectedCondition] = useState('Todas');
 
-    const filteredProducts = MOCK_PRODUCTS.filter(p => {
+    const { listings, loading } = useListings();
+    const products = loading ? MOCK_PRODUCTS : listings.length > 0 ? listings : MOCK_PRODUCTS;
+
+    const filteredProducts = products.filter(p => {
         const matchesSearch = p.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
             p.model.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory = selectedCategory === 'Todas' || p.category === selectedCategory;

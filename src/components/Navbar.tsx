@@ -1,19 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import { Search, ShoppingCart, Menu, X, User } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, ShoppingCart, Menu, X, User, LogOut } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import { signOut } from 'firebase/auth';
+import { auth } from '../lib/firebase';
+import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsMenuOpen(false);
     setIsCartOpen(false);
     setIsSearchOpen(false);
+    setIsUserMenuOpen(false);
   }, [location]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSignOut = async () => {
+    await signOut(auth);
+    setIsUserMenuOpen(false);
+  };
+
+  const avatarLetter = user?.displayName?.[0]?.toUpperCase()
+    ?? user?.email?.[0]?.toUpperCase()
+    ?? '?';
 
   return (
     <>
@@ -39,7 +65,11 @@ const Navbar: React.FC = () => {
 
             <div className="navbar-mobile-actions">
               <Link to="/vender" className="btn-primary">Vender mi bici</Link>
-              <Link to="/login" className="btn-secondary">Iniciar Sesión</Link>
+              {user ? (
+                <button className="btn-secondary" onClick={handleSignOut}>Cerrar Sesión</button>
+              ) : (
+                <Link to="/login" className="btn-secondary">Iniciar Sesión</Link>
+              )}
             </div>
           </div>
 
@@ -51,9 +81,38 @@ const Navbar: React.FC = () => {
               <button className="icon-btn" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                 <Menu size={20} />
               </button>
-              <Link to="/login" className="icon-btn">
-                <User size={20} />
-              </Link>
+
+              {user ? (
+                <div className="user-menu-wrapper" ref={userMenuRef}>
+                  <button
+                    className="user-avatar"
+                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                    aria-label="Menú de usuario"
+                  >
+                    {user.photoURL ? (
+                      <img src={user.photoURL} alt={user.displayName ?? 'Avatar'} />
+                    ) : (
+                      <span>{avatarLetter}</span>
+                    )}
+                  </button>
+                  {isUserMenuOpen && (
+                    <div className="user-dropdown">
+                      <div className="user-dropdown-header">
+                        <p className="user-dropdown-name">{user.displayName ?? 'Mijito'}</p>
+                        <p className="user-dropdown-email">{user.email}</p>
+                      </div>
+                      <button className="user-dropdown-item" onClick={handleSignOut}>
+                        <LogOut size={16} />
+                        Cerrar Sesión
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link to="/login" className="icon-btn">
+                  <User size={20} />
+                </Link>
+              )}
             </div>
             <button className="icon-btn cart-toggle" onClick={() => setIsCartOpen(true)}>
               <ShoppingCart size={22} />

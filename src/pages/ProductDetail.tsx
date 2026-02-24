@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { MOCK_PRODUCTS } from '../data/products';
+import { useListing } from '../hooks/useListing';
 import { ChevronLeft, Shield, Truck, RotateCcw, MessageSquare, ShoppingCart, Star, ShieldCheck } from 'lucide-react';
 import './ProductDetail.css';
 
 const ProductDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const product = MOCK_PRODUCTS.find(p => p.id === id);
+    const { product: firestoreProduct, loading } = useListing(id);
     const [activeImage, setActiveImage] = useState(0);
 
+    const product = firestoreProduct ?? (loading ? (MOCK_PRODUCTS.find(p => p.id === id) ?? null) : null);
+
     if (!product) {
+        if (loading) return null;
         return (
             <div className="container" style={{ padding: '5rem 0', textAlign: 'center' }}>
                 <h2>Mijito, esa bici ya se nos fue...</h2>
