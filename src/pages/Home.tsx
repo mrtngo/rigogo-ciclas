@@ -126,7 +126,6 @@ const Home: React.FC = () => {
         <div className="cards-scroll-wrapper">
           <div className="cards-scroll">
             {featured.map((product, i) => {
-              const price = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price);
               return (
                 <div
                   key={product.id}
