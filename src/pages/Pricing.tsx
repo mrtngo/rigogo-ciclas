@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Check, Loader } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { httpsCallable } from 'firebase/functions';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 import { LISTING_PLANS } from '../constants/plans';
 import type { ListingPlan } from '../constants/plans';
-import { functions } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
 import './Pricing.css';
 
@@ -28,18 +28,20 @@ const Pricing: React.FC = () => {
     setPaying(plan);
     setPayError('');
     try {
-      const createCheckout = httpsCallable<
-        { plan: string },
-        { checkoutUrl: string; reference: string }
-      >(functions, 'createWompiCheckout');
-      const result = await createCheckout({ plan });
-      const { checkoutUrl, reference } = result.data;
-      sessionStorage.setItem('wompiReference', reference);
-      window.location.href = checkoutUrl;
+      // TODO: replace with Wompi payment flow once credentials are available
+      const periodEnd = new Date();
+      periodEnd.setDate(periodEnd.getDate() + (plan === 'contrarreloj' ? 60 : 30));
+      await setDoc(doc(db, 'subscriptions', user.uid), {
+        plan,
+        status: 'active',
+        wompiReference: null,
+        periodEnd,
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
+      navigate('/vender');
     } catch (err) {
-      console.error('createWompiCheckout error:', err);
-      const msg = err instanceof Error ? err.message : String(err);
-      setPayError(`Error: ${msg}`);
+      console.error('subscription error:', err);
+      setPayError('Error al activar el plan. Intenta de nuevo.');
       setPaying(null);
     }
   };
