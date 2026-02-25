@@ -13,6 +13,7 @@ import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
 import Pricing from './pages/Pricing';
 import PaymentResult from './pages/PaymentResult';
+import MockCheckout from './pages/MockCheckout';
 import './App.css';
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
               <Route path="/precios" element={<Pricing />} />
+              <Route path="/mock-checkout" element={<ProtectedRoute><MockCheckout /></ProtectedRoute>} />
               <Route path="/pago-resultado" element={<ProtectedRoute><PaymentResult /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>

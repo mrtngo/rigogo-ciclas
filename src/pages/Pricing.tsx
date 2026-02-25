@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
-import { Check, Loader } from 'lucide-react';
+import React from 'react';
+import { Check } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../lib/firebase';
 import { LISTING_PLANS } from '../constants/plans';
 import type { ListingPlan } from '../constants/plans';
 import { useAuth } from '../context/AuthContext';
@@ -17,33 +15,13 @@ const FMT_COP = new Intl.NumberFormat('es-CO', {
 const Pricing: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [paying, setPaying] = useState<ListingPlan | null>(null);
-  const [payError, setPayError] = useState('');
 
-  const handlePaidPlan = async (plan: ListingPlan) => {
+  const handlePaidPlan = (plan: ListingPlan) => {
     if (!user) {
       navigate('/login', { state: { from: '/precios' } });
       return;
     }
-    setPaying(plan);
-    setPayError('');
-    try {
-      // TODO: replace with Wompi payment flow once credentials are available
-      const periodEnd = new Date();
-      periodEnd.setDate(periodEnd.getDate() + (plan === 'contrarreloj' ? 60 : 30));
-      await setDoc(doc(db, 'subscriptions', user.uid), {
-        plan,
-        status: 'active',
-        wompiReference: null,
-        periodEnd,
-        updatedAt: serverTimestamp(),
-      }, { merge: true });
-      navigate('/vender');
-    } catch (err) {
-      console.error('subscription error:', err);
-      setPayError('Error al activar el plan. Intenta de nuevo.');
-      setPaying(null);
-    }
+    navigate('/mock-checkout', { state: { plan } });
   };
 
   return (
@@ -99,23 +77,14 @@ const Pricing: React.FC = () => {
                 <button
                   className="pricing-cta-btn"
                   onClick={() => handlePaidPlan(plan.id)}
-                  disabled={paying !== null}
                 >
-                  {paying === plan.id ? (
-                    <><Loader size={16} className="pricing-spin" /> Iniciando pago...</>
-                  ) : (
-                    'Suscribirme'
-                  )}
+                  Suscribirme
                 </button>
               )}
             </div>
           </div>
         ))}
       </section>
-
-      {payError && (
-        <p className="container pricing-pay-error">{payError}</p>
-      )}
 
       <section className="pricing-faq container">
         <h2>Preguntas frecuentes</h2>

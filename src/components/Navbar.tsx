@@ -5,6 +5,7 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
 import { useSiteSettings } from '../hooks/useSiteSettings';
+import { LOGOS } from '../constants/assets';
 import './Navbar.css';
 
 const Navbar: React.FC = () => {
@@ -54,8 +55,7 @@ const Navbar: React.FC = () => {
         <div className="navbar-container container">
           <div className="navbar-logo">
             <Link to="/">
-              <span className="logo-icon">⇄</span>
-              <span className="logo-text">rigomarket.</span>
+              <img src={LOGOS.blanco} alt="rigomarket" className="navbar-logo-img" />
             </Link>
           </div>
 

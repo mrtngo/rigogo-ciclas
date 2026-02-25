@@ -20,6 +20,28 @@
     color: rgba(255, 255, 255, 0.7);
 }
 
+.vender-hero .btn-primary,
+.vender-hero a.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--color-primary);
+    color: var(--color-dark);
+    padding: 14px 32px;
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    transition: all var(--transition-fast);
+}
+
+.vender-hero .btn-primary:hover,
+.vender-hero a.btn-primary:hover {
+    background: white;
+    color: var(--color-dark);
+    transform: translateY(-1px);
+}
+
 .vender-steps {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
