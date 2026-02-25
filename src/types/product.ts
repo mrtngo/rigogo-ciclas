@@ -1,4 +1,7 @@
 import type { Timestamp } from 'firebase/firestore';
+import type { ListingPlan } from '../constants/plans';
+
+export type { ListingPlan };
 
 export type BikeCondition = 'Nuevo' | 'Como nuevo' | 'Excelente' | 'Buen estado' | 'Para restaurar';
 
@@ -49,7 +52,10 @@ export interface Listing {
         location: string;
         rating: number;
     };
-    status: 'pending' | 'active' | 'sold' | 'rejected';
+    status: 'pending' | 'active' | 'sold' | 'rejected' | 'draft';
+    plan?: ListingPlan;
+    wompiReference?: string;
+    planExpiresAt?: Timestamp;
     createdAt: Timestamp;
     updatedAt: Timestamp;
 }

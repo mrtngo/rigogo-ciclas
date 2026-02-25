@@ -12,13 +12,13 @@ import type { Listing } from '../types/product';
 import './AdminDashboard.css';
 
 type AdminView = 'dashboard' | 'listings' | 'users' | 'settings';
-type StatusFilter = 'all' | 'pending' | 'active' | 'sold' | 'rejected';
+type StatusFilter = 'all' | 'pending' | 'active' | 'sold' | 'rejected' | 'draft';
 
 const STATUS_LABELS: Record<string, string> = {
-    pending: 'Pendiente', active: 'Activo', sold: 'Vendido', rejected: 'Rechazado',
+    pending: 'Pendiente', active: 'Activo', sold: 'Vendido', rejected: 'Rechazado', draft: 'Pago pendiente',
 };
 const STATUS_CLASSES: Record<string, string> = {
-    pending: 'badge-pending', active: 'badge-active', sold: 'badge-sold', rejected: 'badge-rejected',
+    pending: 'badge-pending', active: 'badge-active', sold: 'badge-sold', rejected: 'badge-rejected', draft: 'badge-draft',
 };
 
 const FMT_COP = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
@@ -53,6 +53,7 @@ const AdminDashboard: React.FC = () => {
         active: listings.filter(l => l.status === 'active').length,
         sold: listings.filter(l => l.status === 'sold').length,
         rejected: listings.filter(l => l.status === 'rejected').length,
+        draft: listings.filter(l => l.status === 'draft').length,
     };
 
     const totalRevenue = listings.filter(l => l.status === 'sold').reduce((s, l) => s + l.price, 0);
@@ -89,13 +90,17 @@ const AdminDashboard: React.FC = () => {
                     </button>
                     {view === 'listings' && (
                         <div className="nav-subitems">
-                            {(['pending', 'active', 'sold', 'all'] as StatusFilter[]).map(s => (
+                            {(['pending', 'draft', 'active', 'sold', 'all'] as StatusFilter[]).map(s => (
                                 <button
                                     key={s}
                                     className={`nav-subitem ${statusFilter === s ? 'active' : ''}`}
                                     onClick={() => setStatusFilter(s)}
                                 >
-                                    {s === 'pending' ? 'Pendientes' : s === 'active' ? 'Activos' : s === 'sold' ? 'Vendidos' : 'Todos'}
+                                    {s === 'pending' ? 'Pendientes'
+                                        : s === 'draft' ? 'Pago pendiente'
+                                        : s === 'active' ? 'Activos'
+                                        : s === 'sold' ? 'Vendidos'
+                                        : 'Todos'}
                                     <span className="nav-badge">{s === 'all' ? counts.all : counts[s]}</span>
                                 </button>
                             ))}
@@ -198,6 +203,7 @@ const AdminDashboard: React.FC = () => {
                         <header className="admin-header">
                             <h1>
                                 {statusFilter === 'pending' ? 'Pendientes de Revisión'
+                                    : statusFilter === 'draft' ? 'Pago Pendiente'
                                     : statusFilter === 'active' ? 'Anuncios Activos'
                                     : statusFilter === 'sold' ? 'Vendidos'
                                     : 'Todos los Anuncios'}
@@ -244,12 +250,12 @@ const AdminDashboard: React.FC = () => {
                                                 <td><span className={`status-badge ${STATUS_CLASSES[l.status] ?? ''}`}>{STATUS_LABELS[l.status] ?? l.status}</span></td>
                                                 <td className="date-cell">{fmtDate(l.createdAt)}</td>
                                                 <td className="actions-cell">
-                                                    {(l.status === 'pending' || l.status === 'rejected') && (
+                                                    {(l.status === 'pending' || l.status === 'rejected' || l.status === 'draft') && (
                                                         <button className="action-btn approve" title="Aprobar" onClick={() => setStatus(l.id, 'active')}>
                                                             <CheckCircle size={18} />
                                                         </button>
                                                     )}
-                                                    {(l.status === 'pending' || l.status === 'active') && (
+                                                    {(l.status === 'pending' || l.status === 'active' || l.status === 'draft') && (
                                                         <button className="action-btn reject" title="Rechazar" onClick={() => setStatus(l.id, 'rejected')}>
                                                             <XCircle size={18} />
                                                         </button>

@@ -137,6 +137,11 @@
     color: #991b1b;
 }
 
+.badge-draft {
+    background: #fef3c7;
+    color: #92400e;
+}
+
 .nav-badge {
     margin-left: auto;
     background: var(--color-surface);

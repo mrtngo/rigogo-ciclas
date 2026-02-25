@@ -62,6 +62,7 @@ const Navbar: React.FC = () => {
           <div className={`navbar-links ${isMenuOpen ? 'active' : ''}`}>
             <Link to="/marketplace">Compra</Link>
             <Link to="/vender">Vende</Link>
+            <Link to="/precios">Planes</Link>
             <Link to="/taller">Encuentra una tienda</Link>
             <Link to="/contacto">Contacto</Link>
 

@@ -11,6 +11,8 @@ import Login from './pages/Login';
 import NotFound from './pages/NotFound';
 import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
+import Pricing from './pages/Pricing';
+import PaymentResult from './pages/PaymentResult';
 import './App.css';
 
 function App() {
@@ -29,6 +31,8 @@ function App() {
               <Route path="/taller" element={<Taller />} />
               <Route path="/login" element={<Login />} />
               <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/precios" element={<Pricing />} />
+              <Route path="/pago-resultado" element={<ProtectedRoute><PaymentResult /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
