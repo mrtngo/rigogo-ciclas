@@ -36,8 +36,10 @@ const Pricing: React.FC = () => {
       const { checkoutUrl, reference } = result.data;
       sessionStorage.setItem('wompiReference', reference);
       window.location.href = checkoutUrl;
-    } catch {
-      setPayError('Error al iniciar el pago. Intenta de nuevo.');
+    } catch (err) {
+      console.error('createWompiCheckout error:', err);
+      const msg = err instanceof Error ? err.message : String(err);
+      setPayError(`Error: ${msg}`);
       setPaying(null);
     }
   };
