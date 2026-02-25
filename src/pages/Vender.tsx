@@ -86,7 +86,7 @@ const Vender: React.FC = () => {
                     location: 'Colombia',
                     rating: 0,
                 },
-                status: 'pending',
+                status: 'active',
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),
             });
