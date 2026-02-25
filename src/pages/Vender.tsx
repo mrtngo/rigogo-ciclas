@@ -1,14 +1,13 @@
 import React, { useRef, useState } from 'react';
-import { Camera, Tag, CheckCircle, ChevronRight, ChevronLeft, Upload, Bike, Check } from 'lucide-react';
+import { Camera, Tag, CheckCircle, ChevronRight, ChevronLeft, Upload, Bike } from 'lucide-react';
 import './Vender.css';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { doc, collection, setDoc, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { httpsCallable } from 'firebase/functions';
-import { db, storage, functions } from '../lib/firebase';
+import { db, storage } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
 import { LISTING_PLANS } from '../constants/plans';
-import type { ListingPlan } from '../constants/plans';
+import { useSubscription } from '../hooks/useSubscription';
 import { useUserListings } from '../hooks/useUserListings';
 
 interface FormData {
@@ -24,15 +23,16 @@ interface FormData {
 
 const Vender: React.FC = () => {
     const { user } = useAuth();
-    const location = useLocation();
-    const locationPlan = (location.state as { plan?: ListingPlan } | null)?.plan;
     const [step, setStep] = useState(0);
     const [submitting, setSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState('');
     const [imageFiles, setImageFiles] = useState<File[]>([]);
-    const [selectedPlan, setSelectedPlan] = useState<ListingPlan>(locationPlan ?? 'escarabajo');
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { subscription } = useSubscription();
     const { activeCount } = useUserListings();
+
+    const hasPaidSub = subscription?.status === 'active';
+    const canPost = hasPaidSub || activeCount < 1;
 
     const [formData, setFormData] = useState<FormData>({
         brand: '',
@@ -49,7 +49,7 @@ const Vender: React.FC = () => {
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ) => setFormData(prev => ({ ...prev, [field]: e.target.value }));
 
-    const handleNext = () => setStep(s => Math.min(s + 1, 6));
+    const handleNext = () => setStep(s => Math.min(s + 1, 5));
     const handleBack = () => setStep(s => Math.max(s - 1, 0));
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,94 +58,58 @@ const Vender: React.FC = () => {
         }
     };
 
-    const uploadImages = async (listingId: string, maxPhotos: number): Promise<string[]> => {
-        const urls: string[] = [];
-        for (const file of imageFiles.slice(0, maxPhotos)) {
-            try {
-                const storageRef = ref(storage, `listings/${listingId}/${file.name}`);
-                await uploadBytes(storageRef, file);
-                const url = await getDownloadURL(storageRef);
-                urls.push(url);
-            } catch {
-                // Storage not configured or failed — skip
-            }
-        }
-        return urls;
-    };
-
-    const buildDoc = (uid: string, imageUrls: string[], plan: ListingPlan, status: string) => ({
-        brand: formData.brand,
-        model: formData.model,
-        year: parseInt(formData.year) || new Date().getFullYear(),
-        price: parseInt(formData.price) || 0,
-        size: formData.size,
-        condition: formData.condition,
-        category: formData.category,
-        images: imageUrls,
-        description: formData.description,
-        specs: { frame: '', groupset: '', wheels: '' },
-        seller: {
-            uid,
-            name: user?.displayName ?? user?.email ?? 'Vendedor',
-            location: 'Colombia',
-            rating: 0,
-        },
-        plan,
-        status,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-    });
-
-    const handleSubmitFree = async () => {
+    const handleSubmit = async () => {
         if (!user) return;
         setSubmitting(true);
         setSubmitError('');
         try {
+            const plan = hasPaidSub ? subscription!.plan : 'escarabajo';
+            const maxPhotos = LISTING_PLANS.find(p => p.id === plan)?.maxPhotos ?? 4;
+
             const listingRef = doc(collection(db, 'listings'));
-            const imageUrls = await uploadImages(listingRef.id, 4);
-            await setDoc(listingRef, buildDoc(user.uid, imageUrls, 'escarabajo', 'active'));
-            setStep(6);
+            const imageUrls: string[] = [];
+
+            for (const file of imageFiles.slice(0, maxPhotos)) {
+                try {
+                    const storageRef = ref(storage, `listings/${listingRef.id}/${file.name}`);
+                    await uploadBytes(storageRef, file);
+                    const url = await getDownloadURL(storageRef);
+                    imageUrls.push(url);
+                } catch {
+                    // Storage not configured — skip
+                }
+            }
+
+            await setDoc(listingRef, {
+                brand: formData.brand,
+                model: formData.model,
+                year: parseInt(formData.year) || new Date().getFullYear(),
+                price: parseInt(formData.price) || 0,
+                size: formData.size,
+                condition: formData.condition,
+                category: formData.category,
+                images: imageUrls,
+                description: formData.description,
+                specs: { frame: '', groupset: '', wheels: '' },
+                seller: {
+                    uid: user.uid,
+                    name: user.displayName ?? user.email ?? 'Vendedor',
+                    location: 'Colombia',
+                    rating: 0,
+                },
+                plan,
+                status: 'active',
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp(),
+            });
+
+            setStep(5);
         } catch {
             setSubmitError('Ocurrió un error al publicar. Intenta de nuevo.');
         } finally {
             setSubmitting(false);
         }
     };
-
-    const handleSubmitPaid = async () => {
-        if (!user) return;
-        setSubmitting(true);
-        setSubmitError('');
-        try {
-            const listingRef = doc(collection(db, 'listings'));
-            const imageUrls = await uploadImages(listingRef.id, 8);
-            await setDoc(listingRef, buildDoc(user.uid, imageUrls, selectedPlan, 'draft'));
-
-            const createCheckout = httpsCallable<
-                { listingId: string; plan: string },
-                { checkoutUrl: string; reference: string }
-            >(functions, 'createWompiCheckout');
-
-            const result = await createCheckout({ listingId: listingRef.id, plan: selectedPlan });
-            const { checkoutUrl, reference } = result.data;
-
-            sessionStorage.setItem('wompiReference', reference);
-            window.location.href = checkoutUrl;
-        } catch {
-            setSubmitError('Error al iniciar el pago. Intenta de nuevo.');
-            setSubmitting(false);
-        }
-    };
-
-    const handlePlanSubmit = () => {
-        if (selectedPlan === 'escarabajo') {
-            handleSubmitFree();
-        } else {
-            handleSubmitPaid();
-        }
-    };
-
-    const isPaywalled = selectedPlan === 'escarabajo' && activeCount >= 1;
 
     // ── Landing ──
     if (step === 0) {
@@ -155,9 +119,20 @@ const Vender: React.FC = () => {
                     <div className="container">
                         <h1>Vende tu bici en <span className="highlight">minutos</span></h1>
                         <p>Llega a miles de ciclistas apasionados. Es rápido, seguro y fácil.</p>
-                        <button className="btn-primary" style={{ marginTop: '2rem' }} onClick={() => setStep(1)}>
-                            Empezar a Vender
-                        </button>
+                        {canPost ? (
+                            <button className="btn-primary" style={{ marginTop: '2rem' }} onClick={() => setStep(1)}>
+                                Empezar a Vender
+                            </button>
+                        ) : (
+                            <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1rem' }}>
+                                    Ya tienes una publicación activa en el plan gratuito.
+                                </p>
+                                <Link to="/precios" className="btn-primary">
+                                    Ver planes de suscripción
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 </section>
 
@@ -183,7 +158,7 @@ const Vender: React.FC = () => {
     }
 
     // ── Success ──
-    if (step === 6) {
+    if (step === 5) {
         return (
             <div className="vender-page container action-container animate-fade-in">
                 <div className="success-wrapper">
@@ -196,7 +171,7 @@ const Vender: React.FC = () => {
         );
     }
 
-    // ── Form (steps 1–5) ──
+    // ── Form (steps 1–4) ──
     return (
         <div className="vender-page container form-container animate-fade-in">
             <div className="form-header">
@@ -204,9 +179,9 @@ const Vender: React.FC = () => {
                     <ChevronLeft size={20} /> Atrás
                 </button>
                 <div className="progress-bar">
-                    <div className="progress-fill" style={{ width: `${(step / 5) * 100}%` }}></div>
+                    <div className="progress-fill" style={{ width: `${(step / 4) * 100}%` }}></div>
                 </div>
-                <span>Paso {step} de 5</span>
+                <span>Paso {step} de 4</span>
             </div>
 
             <div className="form-content">
@@ -301,7 +276,10 @@ const Vender: React.FC = () => {
                 {step === 3 && (
                     <div className="form-step animate-slide-in">
                         <h2>Sube las mejores fotos</h2>
-                        <p className="text-muted">Las fotos de buena calidad venden más rápido. Podrás subir hasta 8 con planes de pago.</p>
+                        <p className="text-muted">
+                            Las fotos de buena calidad venden más rápido.
+                            {hasPaidSub ? ' Puedes subir hasta 8 fotos.' : ' Plan gratuito: hasta 4 fotos.'}
+                        </p>
 
                         <div className="upload-area" onClick={() => fileInputRef.current?.click()}>
                             <Upload size={48} className="upload-icon" />
@@ -358,72 +336,22 @@ const Vender: React.FC = () => {
                         <div className="summary-box">
                             <p>Ten en cuenta que RIGOMARKET cobra una pequeña comisión por la transacción segura y logística técnica.</p>
                         </div>
-                    </div>
-                )}
-
-                {step === 5 && (
-                    <div className="form-step animate-slide-in">
-                        <h2>Elige tu plan</h2>
-                        <p className="text-muted">Selecciona cómo quieres publicar tu bicicleta.</p>
-
-                        <div className="plan-grid">
-                            {LISTING_PLANS.map(plan => (
-                                <div
-                                    key={plan.id}
-                                    className={`plan-card${selectedPlan === plan.id ? ' plan-card--selected' : ''}`}
-                                    onClick={() => setSelectedPlan(plan.id)}
-                                    role="radio"
-                                    aria-checked={selectedPlan === plan.id}
-                                >
-                                    <p className="plan-card-name">{plan.name}</p>
-                                    <p className="plan-card-price">
-                                        {plan.price === 0
-                                            ? 'Gratis'
-                                            : `$${plan.price.toLocaleString('es-CO')}`}
-                                        {plan.price > 0 && <span>/mes</span>}
-                                    </p>
-                                    <ul className="plan-card-features">
-                                        {plan.features.map(f => (
-                                            <li key={f}>
-                                                <Check size={13} className="plan-check" />
-                                                {f}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            ))}
-                        </div>
-
-                        {isPaywalled && (
-                            <p className="paywall-note">
-                                Ya tienes {activeCount} publicación{activeCount !== 1 ? 'es' : ''} activa{activeCount !== 1 ? 's' : ''} en el plan gratuito.{' '}
-                                <Link to="/precios">Actualiza tu plan</Link> para publicar más.
-                            </p>
-                        )}
 
                         {submitError && (
-                            <p className="submit-error">{submitError}</p>
+                            <p style={{ color: '#dc2626', marginTop: '1rem', fontSize: '0.9rem' }}>{submitError}</p>
                         )}
                     </div>
                 )}
             </div>
 
             <div className="form-actions">
-                {step < 5 ? (
+                {step < 4 ? (
                     <button className="btn-primary" onClick={handleNext}>
                         Siguiente Paso <ChevronRight size={20} />
                     </button>
                 ) : (
-                    <button
-                        className="btn-primary"
-                        onClick={handlePlanSubmit}
-                        disabled={submitting || isPaywalled}
-                    >
-                        {submitting
-                            ? (selectedPlan === 'escarabajo' ? 'Publicando...' : 'Iniciando pago...')
-                            : (selectedPlan === 'escarabajo' ? 'Publicar gratis' : 'Continuar con pago')
-                        }
-                        {!submitting && <ChevronRight size={20} />}
+                    <button className="btn-primary" onClick={handleSubmit} disabled={submitting}>
+                        {submitting ? 'Publicando...' : 'Publicar Mi Bici'} {!submitting && <ChevronRight size={20} />}
                     </button>
                 )}
             </div>

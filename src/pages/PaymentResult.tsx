@@ -1,43 +1,44 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle, XCircle, Loader } from 'lucide-react';
-import { useListingByReference } from '../hooks/useListingByReference';
+import { useSubscription } from '../hooks/useSubscription';
 import './PaymentResult.css';
 
 const PaymentResult: React.FC = () => {
   const reference = sessionStorage.getItem('wompiReference');
-  const { listing, loading } = useListingByReference(reference);
+  const { subscription, loading } = useSubscription();
 
-  // Clean up sessionStorage once confirmed active
+  const isThisPayment = subscription?.wompiReference === reference;
+
   useEffect(() => {
-    if (listing?.status === 'active') {
+    if (isThisPayment && subscription?.status === 'active') {
       sessionStorage.removeItem('wompiReference');
     }
-  }, [listing?.status]);
+  }, [isThisPayment, subscription?.status]);
 
-  // No reference in sessionStorage — direct navigation or session lost
+  // No payment reference in session
   if (!loading && !reference) {
     return (
       <div className="payment-result-page">
         <div className="payment-result-card animate-fade-in">
           <XCircle size={64} className="payment-icon payment-icon--error" />
           <h2>Pago no encontrado</h2>
-          <p>No encontramos información de pago en esta sesión. Si acabas de pagar, revisa tu email o intenta de nuevo.</p>
-          <Link to="/vender" className="payment-btn">Volver a publicar</Link>
+          <p>No encontramos información de pago en esta sesión. Si acabas de pagar, revisa tu correo o intenta de nuevo.</p>
+          <Link to="/precios" className="payment-btn">Ver planes</Link>
         </div>
       </div>
     );
   }
 
-  // Loading initial query OR waiting for webhook to flip status to active
-  if (loading || listing?.status === 'draft' || listing?.status === 'pending') {
+  // Waiting: still loading, or webhook hasn't fired yet
+  if (loading || !isThisPayment || subscription?.status === 'pending') {
     return (
       <div className="payment-result-page">
         <div className="payment-result-card animate-fade-in">
           <div className="payment-spinner">
             <Loader size={48} className="spin-icon" />
           </div>
-          <h2>Confirmando tu pago...</h2>
+          <h2>Confirmando tu suscripción...</h2>
           <p>Esto puede tardar unos segundos. No cierres esta ventana.</p>
         </div>
       </div>
@@ -45,29 +46,30 @@ const PaymentResult: React.FC = () => {
   }
 
   // Success
-  if (listing?.status === 'active') {
+  if (isThisPayment && subscription?.status === 'active') {
+    const planName = subscription.plan.charAt(0).toUpperCase() + subscription.plan.slice(1);
     return (
       <div className="payment-result-page">
         <div className="payment-result-card animate-fade-in">
           <CheckCircle size={64} className="payment-icon payment-icon--success" />
-          <h2>¡Pago exitoso!</h2>
+          <h2>¡Suscripción activa!</h2>
           <p>
-            Tu <strong>{listing.brand} {listing.model}</strong> ya está publicada y visible en el catálogo.
+            Tu plan <strong>{planName}</strong> está activo. Ya puedes publicar tu bicicleta.
           </p>
-          <Link to="/marketplace" className="payment-btn">Ver catálogo</Link>
+          <Link to="/vender" className="payment-btn">Publicar ahora</Link>
         </div>
       </div>
     );
   }
 
-  // Error (rejected / not found)
+  // Failed
   return (
     <div className="payment-result-page">
       <div className="payment-result-card animate-fade-in">
         <XCircle size={64} className="payment-icon payment-icon--error" />
         <h2>Pago rechazado</h2>
-        <p>El pago no pudo completarse. No se realizó ningún cobro. Puedes intentarlo de nuevo.</p>
-        <Link to="/vender" className="payment-btn">Intentar de nuevo</Link>
+        <p>El pago no pudo completarse. No se realizó ningún cobro.</p>
+        <Link to="/precios" className="payment-btn">Intentar de nuevo</Link>
       </div>
     </div>
   );

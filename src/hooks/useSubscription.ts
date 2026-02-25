@@ -7,7 +7,7 @@ import type { ListingPlan } from '../constants/plans';
 
 export interface Subscription {
   plan: ListingPlan;
-  status: 'active' | 'expired';
+  status: 'pending' | 'active' | 'expired' | 'failed';
   periodEnd: Timestamp | null;
   wompiReference: string | null;
 }
