@@ -2,6 +2,7 @@ import React from 'react';
 import { Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { LISTING_PLANS } from '../constants/plans';
+import type { ListingPlan } from '../constants/plans';
 import './Pricing.css';
 
 const FMT_COP = new Intl.NumberFormat('es-CO', {
@@ -57,6 +58,7 @@ const Pricing: React.FC = () => {
               </ul>
               <Link
                 to="/vender"
+                state={{ plan: plan.id as ListingPlan }}
                 className={`pricing-cta-btn${plan.price === 0 ? ' pricing-cta-btn--outline' : ''}`}
               >
                 {plan.price === 0 ? 'Publicar gratis' : 'Empezar ahora'}

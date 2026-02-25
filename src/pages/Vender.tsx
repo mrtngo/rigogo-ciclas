@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Camera, Tag, CheckCircle, ChevronRight, ChevronLeft, Upload, Bike, Check } from 'lucide-react';
 import './Vender.css';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { doc, collection, setDoc, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { httpsCallable } from 'firebase/functions';
@@ -24,11 +24,13 @@ interface FormData {
 
 const Vender: React.FC = () => {
     const { user } = useAuth();
+    const location = useLocation();
+    const locationPlan = (location.state as { plan?: ListingPlan } | null)?.plan;
     const [step, setStep] = useState(0);
     const [submitting, setSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState('');
     const [imageFiles, setImageFiles] = useState<File[]>([]);
-    const [selectedPlan, setSelectedPlan] = useState<ListingPlan>('escarabajo');
+    const [selectedPlan, setSelectedPlan] = useState<ListingPlan>(locationPlan ?? 'escarabajo');
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { activeCount } = useUserListings();
 
