@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
+import { useSiteSettings } from '../hooks/useSiteSettings';
 import './Navbar.css';
 
 const Navbar: React.FC = () => {
@@ -13,6 +14,7 @@ const Navbar: React.FC = () => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const location = useLocation();
   const { user } = useAuth();
+  const { settings } = useSiteSettings();
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -45,7 +47,7 @@ const Navbar: React.FC = () => {
     <>
       {/* Announcement bar */}
       <div className="announcement-bar">
-        REGÍSTRATE HOY, PUBLICA Y VENDE TU BICI. <strong>¡FÁCIL Y RÁPIDO!</strong>
+        {settings.announcementText}
       </div>
 
       <nav className="navbar">
