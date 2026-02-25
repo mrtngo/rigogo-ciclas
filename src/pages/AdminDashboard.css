@@ -117,19 +117,62 @@
     font-weight: 700;
 }
 
-.status-badge.como-nuevo {
-    background: #e0f2f1;
-    color: #00695c;
+.badge-pending {
+    background: #fef3c7;
+    color: #92400e;
 }
 
-.status-badge.excelente {
-    background: #e3f2fd;
-    color: #1565c0;
+.badge-active {
+    background: #d1fae5;
+    color: #065f46;
 }
 
-.status-badge.nuevo {
-    background: #f0ff00;
-    color: #000;
+.badge-sold {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.badge-rejected {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.nav-badge {
+    margin-left: auto;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: var(--radius-full);
+}
+
+.nav-badge.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.seller-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.seller-location {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+
+.img-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 4px;
+    background: var(--color-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-muted);
+    flex-shrink: 0;
 }
 
 .actions-cell {
@@ -143,9 +186,14 @@
     color: var(--color-text-muted);
 }
 
-.action-btn.edit:hover {
-    background: var(--color-surface);
-    color: var(--color-secondary);
+.action-btn.approve:hover {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.action-btn.reject:hover {
+    background: #fef3c7;
+    color: #d97706;
 }
 
 .action-btn.delete:hover {

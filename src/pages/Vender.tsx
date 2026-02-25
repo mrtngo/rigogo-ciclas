@@ -59,10 +59,14 @@ const Vender: React.FC = () => {
             const imageUrls: string[] = [];
 
             for (const file of imageFiles) {
-                const storageRef = ref(storage, `listings/${listingRef.id}/${file.name}`);
-                await uploadBytes(storageRef, file);
-                const url = await getDownloadURL(storageRef);
-                imageUrls.push(url);
+                try {
+                    const storageRef = ref(storage, `listings/${listingRef.id}/${file.name}`);
+                    await uploadBytes(storageRef, file);
+                    const url = await getDownloadURL(storageRef);
+                    imageUrls.push(url);
+                } catch {
+                    // Storage not configured — skip image, continue with listing
+                }
             }
 
             await setDoc(listingRef, {

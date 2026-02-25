@@ -49,7 +49,7 @@ export interface Listing {
         location: string;
         rating: number;
     };
-    status: 'pending' | 'active' | 'sold';
+    status: 'pending' | 'active' | 'sold' | 'rejected';
     createdAt: Timestamp;
     updatedAt: Timestamp;
 }

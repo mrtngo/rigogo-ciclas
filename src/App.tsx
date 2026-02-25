@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { AdminRoute } from './components/AdminRoute';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Marketplace from './pages/Marketplace';
@@ -28,7 +29,7 @@ function App() {
               <Route path="/vender" element={<ProtectedRoute><Vender /></ProtectedRoute>} />
               <Route path="/taller" element={<Taller />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
